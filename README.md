@@ -51,6 +51,37 @@ Claude Desktop / Cursor — в `mcpServers`:
 }
 ```
 
+## Self-host по HTTP (remote)
+
+Тот же сервер по Streamable HTTP — для remote-клиентов:
+
+```bash
+MCP_TRANSPORT=http HOST=0.0.0.0 PORT=8000 uv run yandex-metrica-mcp
+# endpoint: http://<host>:8000/mcp
+```
+
+По умолчанию транспорт `stdio`. При `MCP_TRANSPORT=http`: `HOST` (по умолчанию `0.0.0.0`), `PORT` (по умолчанию `8000`).
+
+## Встраивание движка (advanced)
+
+Движок не знает про OAuth и хранилища — токен он получает через инъектируемый резолвер. Это тот же стык, на котором приватный hosted-backend подключает свой OAuth (см. `../docs/contract.md`).
+
+```python
+import os
+from yandex_metrica_mcp import build_server, YandexMetrikaClient
+
+async def my_token_resolver() -> str:
+    return os.environ["YANDEX_METRIKA_TOKEN"]   # или достать из своего стора
+
+server = build_server(token_resolver=my_token_resolver, auth=None)
+server.run(transport="stdio")
+
+# или напрямую клиентом, без MCP:
+counters = await YandexMetrikaClient(token).list_counters()
+```
+
+Экспортируется из пакета: `YandexMetrikaClient`, `TokenResolver`, `build_server`, `env_token_resolver`, `main`.
+
 ## Примеры запросов
 
 - «Сколько визитов и пользователей за последние 7 дней на счётчике 110088107?»
