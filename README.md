@@ -1,39 +1,80 @@
 # yandex-metrika-mcp
 
-Спрашивай **Яндекс.Метрику** обычным языком — прямо в Claude. «Сколько визитов за неделю?», «топ источников за месяц», «доля мобильных?» — ассистент сам сходит в Метрику и ответит. Без дашбордов и отчётов.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![FastMCP](https://img.shields.io/badge/FastMCP-3.x-orange.svg)](https://github.com/jlowin/fastmcp)
+[![MCP](https://img.shields.io/badge/MCP-compatible-brightgreen.svg)](https://modelcontextprotocol.io)
 
-Open-source инструмент от [aiaiai](https://getaiaiai.ru) — мы строим то, чему учим.
+Query **Yandex Metrika** analytics in plain language, right inside Claude. "How many visits this week?", "Top traffic sources for June", "Mobile share today?" — the assistant queries Metrika and answers directly. No dashboards, no SQL, no API keys to manage.
 
-## Подключить за минуту
-
-Ставить ничего не нужно — это готовый сервис, он просто подключается к твоему AI:
-
-1. В Claude открой **коннекторы** (Settings → Connectors) и добавь новый по адресу:
-   ```
-   https://mcp.getaiaiai.ru/yandex-metrika
-   ```
-2. Нажми **Подключить** → **войди через Яндекс** → разреши доступ.
-3. Готово. Спроси: *«покажи мои счётчики»* или *«сколько визитов на сайте за неделю?»*
-
-Своё приложение, токены, ключи — **ничего создавать не надо.** Доступ **только на чтение**: сервис ничего не меняет и не удаляет в твоей Метрике.
-
-![Спросил про географию аудитории обычным языком — агент сам построил карту из живой Яндекс.Метрики, без дашбордов](assets/demo-map.png)
-
-## Что можно спросить
-
-- «Сколько визитов и пользователей за неделю?»
-- «Топ источников трафика за июнь.»
-- «Какая доля мобильного трафика на этой неделе?»
-- «Покажи мои счётчики.»
+Open-source by [aiaiai](https://getaiaiai.ru) — we build what we teach.
 
 ---
 
-## Бонус: self-host со своими ключами
+Задавай вопросы по **Яндекс.Метрике** обычным языком прямо в Claude. «Сколько визитов за неделю?», «топ источников за июнь», «доля мобильных?» — ассистент сам сходит в Метрику и ответит. Без дашбордов.
+
+![Спросил про географию аудитории обычным языком — агент сам построил карту из живой Яндекс.Метрики](assets/demo-map.png)
+
+## Works with
+
+Claude.ai &nbsp;·&nbsp; Claude Desktop &nbsp;·&nbsp; Cursor &nbsp;·&nbsp; any MCP-compatible client
+
+## Connect in one minute (hosted)
+
+No installation needed — connect to the hosted service:
+
+1. Open **Connectors** in Claude (Settings → Connectors) and add:
+   ```
+   https://mcp.getaiaiai.ru/yandex-metrika
+   ```
+2. Click **Connect** → sign in with Yandex → allow access.
+3. Ask: *"Show my counters"* or *"How many visits this week?"*
+
+No app registration, no tokens to manage. **Read-only** — the service never writes to your Metrika account.
 
 <details>
-<summary>Для разработчиков — крутить движок у себя со своим токеном (полный контроль над данными). Развернуть.</summary>
+<summary>Подключение на русском</summary>
 
-Open-source MCP-сервер на Python (FastMCP). Нужны Python 3.10+ и [uv](https://docs.astral.sh/uv/).
+1. В Claude откройте **Настройки → Коннекторы → Добавить** и введите:
+   ```
+   https://mcp.getaiaiai.ru/yandex-metrika
+   ```
+2. Нажмите **Подключить** → **войдите через Яндекс** → разрешите доступ.
+3. Спросите: *«покажи мои счётчики»* или *«сколько визитов на сайте за неделю?»*
+
+</details>
+
+## Tools
+
+| Tool | Description |
+|------|-------------|
+| `list_counters` | List all Yandex Metrika counters available to the token (id, name, site) |
+| `query` | Run a Reporting API query — visits, users, pageviews, bounce rate, traffic sources, devices, geography, UTMs, and more |
+
+### `query` parameters
+
+| Parameter | Default | Description |
+|-----------|---------|-------------|
+| `counter_id` | required | Counter ID from `list_counters` |
+| `metrics` | required | Comma-separated metrics, e.g. `ym:s:visits,ym:s:users` |
+| `dimensions` | — | Group-by fields: `ym:s:date`, `ym:s:lastTrafficSource`, `ym:s:deviceCategory`, … |
+| `date1` / `date2` | `7daysAgo` / `today` | Date range: `YYYY-MM-DD` or relative (`today`, `yesterday`, `NdaysAgo`) |
+| `filters` | — | Filter expression, e.g. `ym:s:deviceCategory=='mobile'` |
+| `sort` | — | Sort field; prefix `-` for descending, e.g. `-ym:s:visits` |
+| `limit` | `100` | Max rows returned |
+
+Common metrics: `ym:s:visits`, `ym:s:users`, `ym:s:pageviews`, `ym:s:bounceRate`, `ym:s:avgVisitDurationSeconds`, `ym:s:newUsers`
+
+Common dimensions: `ym:s:date`, `ym:s:lastTrafficSource`, `ym:s:startURL`, `ym:s:deviceCategory`, `ym:s:regionCountry`, `ym:s:lastsourceUTMSource`
+
+---
+
+## Self-host with your own token
+
+<details>
+<summary>For developers — run the engine locally with full control over your data.</summary>
+
+Requires Python 3.10+ and [uv](https://docs.astral.sh/uv/).
 
 ```bash
 git clone https://github.com/expremiental/yandex-metrika-mcp.git
@@ -41,13 +82,13 @@ cd yandex-metrika-mcp
 uv sync
 ```
 
-**Токен.** На [oauth.yandex.ru](https://oauth.yandex.ru) создай приложение (платформа «Веб-сервисы»), включи доступ **Яндекс.Метрика → Получение статистики, чтение параметров** (`metrika:read`), получи OAuth-токен:
+**Get a token.** Go to [oauth.yandex.ru](https://oauth.yandex.ru), create an app (platform: "Web services"), enable **Yandex Metrika → Read statistics** (`metrika:read`), then get an OAuth token:
 
 ```bash
-export YANDEX_METRIKA_TOKEN="<токен>"
+export YANDEX_METRIKA_TOKEN="<your-token>"
 ```
 
-**Подключение** (Claude Desktop / Cursor — в `mcpServers`):
+**Connect** (Claude Desktop / Cursor — add to `mcpServers`):
 
 ```json
 {
@@ -55,29 +96,33 @@ export YANDEX_METRIKA_TOKEN="<токен>"
     "yandex-metrika": {
       "command": "uv",
       "args": ["run", "yandex-metrika-mcp"],
-      "env": { "YANDEX_METRIKA_TOKEN": "<токен>" }
+      "env": { "YANDEX_METRIKA_TOKEN": "<your-token>" }
     }
   }
 }
 ```
 
-**Remote по HTTP:**
+**Run over HTTP:**
 ```bash
-MCP_TRANSPORT=http PORT=8000 uv run yandex-metrika-mcp   # endpoint: http://<host>:8000/mcp
+MCP_TRANSPORT=http PORT=8000 uv run yandex-metrika-mcp
+# endpoint: http://localhost:8000/mcp
 ```
 
-**Инструменты:** `list_counters` (список счётчиков) и `query` (произвольный отчёт Reporting API). Скоуп только `metrika:read`.
+**Embed in your own backend.** The engine accepts an injectable async token resolver — wrap it with your own auth:
 
-**Встраивание.** Движок получает токен через инъектируемый async-резолвер — можно обернуть своей авторизацией:
 ```python
 from yandex_metrika_mcp import build_server
-async def token_resolver() -> str: return "<metrika:read token>"
-build_server(token_resolver=token_resolver).run(transport="stdio")
+
+async def my_token_resolver() -> str:
+    return "<metrika:read token>"
+
+build_server(token_resolver=my_token_resolver).run(transport="stdio")
 ```
-Экспорт: `build_server`, `YandexMetrikaClient`, `TokenResolver`, `env_token_resolver`, `main`.
+
+Public API: `build_server`, `YandexMetrikaClient`, `TokenResolver`, `env_token_resolver`, `main`.
 
 </details>
 
-## Лицензия
+## License
 
-[MIT](LICENSE) · сделано в [aiaiai](https://getaiaiai.ru)
+[MIT](LICENSE) · made by [aiaiai](https://getaiaiai.ru)
