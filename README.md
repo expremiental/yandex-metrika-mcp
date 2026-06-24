@@ -78,12 +78,6 @@ build_server(token_resolver=token_resolver).run(transport="stdio")
 
 </details>
 
-## Roadmap
-
-- [ ] Ещё проще подключение для нетехнарей (one-click / agent-driven)
-- [ ] Хелперы под частые отчёты (трафик, источники, конверсии)
-- [ ] **Яндекс.Директ** — реклама в том же сервере
-
 ## Лицензия
 
 [MIT](LICENSE) · сделано в [aiaiai](https://getaiaiai.ru)
