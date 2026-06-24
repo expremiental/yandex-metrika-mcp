@@ -1,43 +1,53 @@
 # yandex-metrica-mcp
 
-Read-only MCP-сервер для **Яндекс.Метрики**. Подключаешь к Claude / Cursor / ChatGPT и спрашиваешь про трафик, источники и конверсии обычным языком — модель сама ходит в API Метрики и приносит цифры.
+Спрашивай **Яндекс.Метрику** обычным языком — прямо в Claude. «Сколько визитов за неделю?», «топ источников за месяц», «доля мобильных?» — ассистент сам сходит в Метрику и ответит. Без дашбордов и отчётов.
 
 Open-source инструмент от [aiaiai](https://getaiaiai.ru) — мы строим то, чему учим.
 
-> ✅ **Статус: ядро работает локально.** Оба tool'а (`list_counters`, `query`) проверены против живого API Метрики через FastMCP-сервер. Дальше — hosted multi-tenant (см. [Roadmap](#roadmap)).
+## Подключить за минуту
 
-## Что умеет (MVP)
+Ставить ничего не нужно — это готовый сервис, он просто подключается к твоему AI:
 
-| Tool | Что делает |
-|------|-----------|
-| `list_counters` | Показать доступные счётчики (id, имя, сайт) — чтобы выбрать, по какому спрашивать |
-| `query` | Произвольный отчёт через Reporting API: метрики, измерения, период, фильтры, сортировка |
+1. В Claude открой **коннекторы** (Settings → Connectors) и добавь новый по адресу:
+   ```
+   https://metrica-mcp.getaiaiai.ru/mcp
+   ```
+2. Нажми **Подключить** → **войди через Яндекс** → разреши доступ.
+3. Готово. Спроси: *«покажи мои счётчики»* или *«сколько визитов на сайте за неделю?»*
 
-**Только чтение.** Сервер ничего не меняет и не удаляет — нужен OAuth-скоуп `metrika:read`, и только он.
+Своё приложение, токены, ключи — **ничего создавать не надо.** Доступ **только на чтение**: сервис ничего не меняет и не удаляет в твоей Метрике.
 
-## Установка (dev)
+<!-- TODO демо-GIF: подключение → вход через Яндекс → вопрос про трафик → ответ -->
 
-Пока репозиторий не опубликован — запуск из исходников:
+## Что можно спросить
+
+- «Сколько визитов и пользователей за неделю?»
+- «Топ источников трафика за июнь.»
+- «Какая доля мобильного трафика на этой неделе?»
+- «Покажи мои счётчики.»
+
+---
+
+## Бонус: self-host со своими ключами
+
+<details>
+<summary>Для разработчиков — крутить движок у себя со своим токеном (полный контроль над данными). Развернуть.</summary>
+
+Open-source MCP-сервер на Python (FastMCP). Нужны Python 3.10+ и [uv](https://docs.astral.sh/uv/).
 
 ```bash
-# из корня движка (папка mcp/)
-uv sync          # или: pip install -e .
+git clone https://github.com/expremiental/yandex-metrica-mcp.git
+cd yandex-metrica-mcp
+uv sync
 ```
 
-## Токен
-
-1. Зайди на [oauth.yandex.ru](https://oauth.yandex.ru), создай приложение, запроси доступ **Яндекс.Метрика → получение статистики (`metrika:read`)**.
-2. Получи OAuth-токен и положи в окружение:
+**Токен.** На [oauth.yandex.ru](https://oauth.yandex.ru) создай приложение (платформа «Веб-сервисы»), включи доступ **Яндекс.Метрика → Получение статистики, чтение параметров** (`metrika:read`), получи OAuth-токен:
 
 ```bash
-export YANDEX_METRIKA_TOKEN="<твой токен>"
+export YANDEX_METRIKA_TOKEN="<токен>"
 ```
 
-(см. `.env.example`)
-
-## Подключение к клиенту
-
-Claude Desktop / Cursor — в `mcpServers`:
+**Подключение** (Claude Desktop / Cursor — в `mcpServers`):
 
 ```json
 {
@@ -45,57 +55,35 @@ Claude Desktop / Cursor — в `mcpServers`:
     "yandex-metrica": {
       "command": "uv",
       "args": ["run", "yandex-metrica-mcp"],
-      "env": { "YANDEX_METRIKA_TOKEN": "<твой токен>" }
+      "env": { "YANDEX_METRIKA_TOKEN": "<токен>" }
     }
   }
 }
 ```
 
-## Self-host по HTTP (remote)
-
-Тот же сервер по Streamable HTTP — для remote-клиентов:
-
+**Remote по HTTP:**
 ```bash
-MCP_TRANSPORT=http HOST=0.0.0.0 PORT=8000 uv run yandex-metrica-mcp
-# endpoint: http://<host>:8000/mcp
+MCP_TRANSPORT=http PORT=8000 uv run yandex-metrica-mcp   # endpoint: http://<host>:8000/mcp
 ```
 
-По умолчанию транспорт `stdio`. При `MCP_TRANSPORT=http`: `HOST` (по умолчанию `0.0.0.0`), `PORT` (по умолчанию `8000`).
+**Инструменты:** `list_counters` (список счётчиков) и `query` (произвольный отчёт Reporting API). Скоуп только `metrika:read`.
 
-## Встраивание движка (advanced)
-
-Движок не знает про OAuth и хранилища — токен он получает через инъектируемый резолвер. Это тот же стык, на котором приватный hosted-backend подключает свой OAuth (см. `../docs/contract.md`).
-
+**Встраивание.** Движок получает токен через инъектируемый async-резолвер — можно обернуть своей авторизацией:
 ```python
-import os
-from yandex_metrica_mcp import build_server, YandexMetrikaClient
-
-async def my_token_resolver() -> str:
-    return os.environ["YANDEX_METRIKA_TOKEN"]   # или достать из своего стора
-
-server = build_server(token_resolver=my_token_resolver, auth=None)
-server.run(transport="stdio")
-
-# или напрямую клиентом, без MCP:
-counters = await YandexMetrikaClient(token).list_counters()
+from yandex_metrica_mcp import build_server
+async def token_resolver() -> str: return "<metrika:read token>"
+build_server(token_resolver=token_resolver).run(transport="stdio")
 ```
+Экспорт: `build_server`, `YandexMetrikaClient`, `TokenResolver`, `env_token_resolver`, `main`.
 
-Экспортируется из пакета: `YandexMetrikaClient`, `TokenResolver`, `build_server`, `env_token_resolver`, `main`.
-
-## Примеры запросов
-
-- «Сколько визитов и пользователей за последние 7 дней на счётчике 110088107?»
-- «Топ источников трафика за июнь, по визитам.»
-- «Какая доля мобильного трафика на этой неделе?»
+</details>
 
 ## Roadmap
 
-- [x] Прогнать `query`/`list_counters` против живого API (✓ 23.06.2026, 4 счётчика, данные отдаёт)
-- [ ] Хелперы под частые отчёты (трафик, источники, конверсии) — чтобы модель меньше угадывала имена метрик
-- [ ] **Яндекс.Директ** (реклама) — наш дифференциатор: в MCP его не делает никто
-- [ ] Хостед-вариант: подключение без локального сетапа (воронка в aiaiai)
-- [ ] Выезд в отдельный публичный репозиторий
+- [ ] Ещё проще подключение для нетехнарей (one-click / agent-driven)
+- [ ] Хелперы под частые отчёты (трафик, источники, конверсии)
+- [ ] **Яндекс.Директ** — реклама в том же сервере
 
 ## Лицензия
 
-[MIT](LICENSE)
+[MIT](LICENSE) · сделано в [aiaiai](https://getaiaiai.ru)
