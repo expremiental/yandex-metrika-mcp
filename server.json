@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.expremiental/yandex-metrika-mcp",
+  "title": "Yandex Metrika MCP",
+  "description": "Read-only MCP server for Yandex Metrika analytics. Query visits, users, traffic sources, bounce rate, geography, devices, and UTMs in plain language — directly in Claude, Cursor, or any MCP client. Hosted service (no setup needed) and self-host with your own token.",
+  "version": "0.1.0",
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://mcp.getaiaiai.ru/yandex-metrika"
+    }
+  ],
+  "repository": {
+    "url": "https://github.com/expremiental/yandex-metrika-mcp"
+  },
+  "license": "MIT"
+}
