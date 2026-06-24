@@ -1,4 +1,4 @@
-# yandex-metrica-mcp
+# yandex-metrika-mcp
 
 Спрашивай **Яндекс.Метрику** обычным языком — прямо в Claude. «Сколько визитов за неделю?», «топ источников за месяц», «доля мобильных?» — ассистент сам сходит в Метрику и ответит. Без дашбордов и отчётов.
 
@@ -10,7 +10,7 @@ Open-source инструмент от [aiaiai](https://getaiaiai.ru) — мы с
 
 1. В Claude открой **коннекторы** (Settings → Connectors) и добавь новый по адресу:
    ```
-   https://metrica-mcp.getaiaiai.ru/mcp
+   https://mcp.getaiaiai.ru/yandex-metrika
    ```
 2. Нажми **Подключить** → **войди через Яндекс** → разреши доступ.
 3. Готово. Спроси: *«покажи мои счётчики»* или *«сколько визитов на сайте за неделю?»*
@@ -36,8 +36,8 @@ Open-source инструмент от [aiaiai](https://getaiaiai.ru) — мы с
 Open-source MCP-сервер на Python (FastMCP). Нужны Python 3.10+ и [uv](https://docs.astral.sh/uv/).
 
 ```bash
-git clone https://github.com/expremiental/yandex-metrica-mcp.git
-cd yandex-metrica-mcp
+git clone https://github.com/expremiental/yandex-metrika-mcp.git
+cd yandex-metrika-mcp
 uv sync
 ```
 
@@ -52,9 +52,9 @@ export YANDEX_METRIKA_TOKEN="<токен>"
 ```json
 {
   "mcpServers": {
-    "yandex-metrica": {
+    "yandex-metrika": {
       "command": "uv",
-      "args": ["run", "yandex-metrica-mcp"],
+      "args": ["run", "yandex-metrika-mcp"],
       "env": { "YANDEX_METRIKA_TOKEN": "<токен>" }
     }
   }
@@ -63,14 +63,14 @@ export YANDEX_METRIKA_TOKEN="<токен>"
 
 **Remote по HTTP:**
 ```bash
-MCP_TRANSPORT=http PORT=8000 uv run yandex-metrica-mcp   # endpoint: http://<host>:8000/mcp
+MCP_TRANSPORT=http PORT=8000 uv run yandex-metrika-mcp   # endpoint: http://<host>:8000/mcp
 ```
 
 **Инструменты:** `list_counters` (список счётчиков) и `query` (произвольный отчёт Reporting API). Скоуп только `metrika:read`.
 
 **Встраивание.** Движок получает токен через инъектируемый async-резолвер — можно обернуть своей авторизацией:
 ```python
-from yandex_metrica_mcp import build_server
+from yandex_metrika_mcp import build_server
 async def token_resolver() -> str: return "<metrika:read token>"
 build_server(token_resolver=token_resolver).run(transport="stdio")
 ```

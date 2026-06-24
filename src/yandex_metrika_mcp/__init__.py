@@ -1,4 +1,4 @@
-"""Read-only MCP server for Yandex Metrica analytics.
+"""Read-only MCP server for Yandex Metrika analytics.
 
 Public engine. Exposes the token-resolver seam from docs/contract.md so the
 same code powers standalone BYO-token mode and a hosted multi-tenant backend.

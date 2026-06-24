@@ -1,7 +1,7 @@
 [project]
-name = "yandex-metrica-mcp"
+name = "yandex-metrika-mcp"
 version = "0.1.0"
-description = "Read-only MCP server for Yandex Metrica analytics. An aiaiai open-source AI-native tool."
+description = "Read-only MCP server for Yandex Metrika analytics. An aiaiai open-source AI-native tool."
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.scripts]
-yandex-metrica-mcp = "yandex_metrica_mcp.server:main"
+yandex-metrika-mcp = "yandex_metrika_mcp.server:main"
 
 [dependency-groups]
 dev = [
@@ -27,7 +27,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/yandex_metrica_mcp"]
+packages = ["src/yandex_metrika_mcp"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

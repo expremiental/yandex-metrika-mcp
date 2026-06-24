@@ -2,8 +2,8 @@
 
 from __future__ import annotations
 
-import yandex_metrica_mcp.server as server_mod
-from yandex_metrica_mcp import build_server
+import yandex_metrika_mcp.server as server_mod
+from yandex_metrika_mcp import build_server
 
 
 async def test_exposes_exactly_two_tools():

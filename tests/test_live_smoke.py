@@ -1,4 +1,4 @@
-"""Optional live smoke test against the real Yandex Metrica API.
+"""Optional live smoke test against the real Yandex Metrika API.
 
 Skipped unless a token is available. Reads YANDEX_METRIKA_TOKEN from the
 environment or from the project .env (one level above the mcp/ engine).
@@ -11,9 +11,9 @@ from pathlib import Path
 
 import pytest
 
-from yandex_metrica_mcp import YandexMetrikaClient
+from yandex_metrika_mcp import YandexMetrikaClient
 
-# mcp/tests/ -> mcp/ -> yandex-metrica-mcp/  (project root holding .env)
+# mcp/tests/ -> mcp/ -> yandex-metrika-mcp/  (project root holding .env)
 _ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
 
 

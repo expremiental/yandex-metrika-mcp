@@ -6,8 +6,8 @@ import httpx
 import pytest
 import respx
 
-from yandex_metrica_mcp import YandexMetrikaClient
-from yandex_metrica_mcp.server import API_BASE
+from yandex_metrika_mcp import YandexMetrikaClient
+from yandex_metrika_mcp.server import API_BASE
 
 TOKEN = "test-token-123"
 

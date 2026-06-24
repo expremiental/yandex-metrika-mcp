@@ -1,9 +1,9 @@
-"""Yandex Metrica MCP — read-only access to Yandex Metrica analytics via MCP.
+"""Yandex Metrika MCP — read-only access to Yandex Metrika analytics via MCP.
 
 An aiaiai open-source AI-native tool. Read scope only (`metrika:read`):
 the server never creates, edits or deletes anything in the account.
 
-This module is the public engine. It knows how to talk to the Metrica API
+This module is the public engine. It knows how to talk to the Metrika API
 given an OAuth token, but it does not know where the token comes from.
 The token is supplied through an injectable resolver (`TokenResolver`), so the
 same engine powers both standalone BYO-token mode and a hosted multi-tenant
@@ -26,7 +26,7 @@ TokenResolver = Callable[[], Awaitable[str]]
 
 
 class YandexMetrikaClient:
-    """Thin async client over the Yandex Metrica API, scoped to one token.
+    """Thin async client over the Yandex Metrika API, scoped to one token.
 
     A client instance carries a single OAuth token. Construct a fresh client
     per request from a resolver so per-user token isolation is preserved.
@@ -36,7 +36,7 @@ class YandexMetrikaClient:
         self._token = token
 
     async def _get(self, path: str, params: dict) -> dict:
-        """GET a Metrica API endpoint with OAuth auth and return parsed JSON."""
+        """GET a Metrika API endpoint with OAuth auth and return parsed JSON."""
         headers = {"Authorization": f"OAuth {self._token}"}
         async with httpx.AsyncClient(timeout=30) as client:
             resp = await client.get(
@@ -92,9 +92,9 @@ def build_server(
     *,
     token_resolver: TokenResolver,
     auth=None,
-    name: str = "yandex-metrica-mcp",
+    name: str = "yandex-metrika-mcp",
 ) -> FastMCP:
-    """Build a configured FastMCP server exposing the read-only Metrica tools.
+    """Build a configured FastMCP server exposing the read-only Metrika tools.
 
     Registers `list_counters` and `query`. Each tool obtains a token via
     `await token_resolver()` and calls `YandexMetrikaClient(token)`. The
@@ -105,7 +105,7 @@ def build_server(
 
     @mcp.tool
     async def list_counters() -> list[dict]:
-        """List Yandex Metrica counters available to the token.
+        """List Yandex Metrika counters available to the token.
 
         Returns each counter's id, name and site so you can pick a `counter_id`
         for `query`. Read scope is enough.
@@ -124,9 +124,9 @@ def build_server(
         sort: str | None = None,
         limit: int = 100,
     ) -> dict:
-        """Run a Reporting API query against a Metrica counter (aggregated stats).
+        """Run a Reporting API query against a Metrika counter (aggregated stats).
 
-        Pass Metrica field names directly. Common ones:
+        Pass Metrika field names directly. Common ones:
 
         Metrics (comma-separated):
           ym:s:visits, ym:s:users, ym:s:pageviews, ym:s:bounceRate,
@@ -137,7 +137,7 @@ def build_server(
           ym:s:deviceCategory, ym:s:regionCountry, ym:s:<attribution>UTMSource
 
         date1 / date2: YYYY-MM-DD or relative (today, yesterday, NdaysAgo).
-        filters: Metrica filter expression, e.g. "ym:s:deviceCategory=='mobile'".
+        filters: Metrika filter expression, e.g. "ym:s:deviceCategory=='mobile'".
         sort: field to sort by; prefix with '-' for descending, e.g. "-ym:s:visits".
 
         Returns the raw Reporting API response (query meta, totals and data rows).
