@@ -17,30 +17,54 @@ Open-source by [aiaiai](https://getaiaiai.ru) — we build what we teach.
 
 ## Works with
 
-Claude.ai &nbsp;·&nbsp; Claude Desktop &nbsp;·&nbsp; Cursor &nbsp;·&nbsp; any MCP-compatible client
+Claude.ai &nbsp;·&nbsp; Claude Code &nbsp;·&nbsp; Claude Desktop &nbsp;·&nbsp; Cursor &nbsp;·&nbsp; any MCP-compatible client
 
 ## Connect in one minute (hosted)
 
-No installation needed — connect to the hosted service:
+No installation needed — connect to the hosted service.
 
-1. Open **Connectors** in Claude (Settings → Connectors) and add:
-   ```
-   https://mcp.getaiaiai.ru/yandex-metrika
-   ```
-2. Click **Connect** → sign in with Yandex → allow access.
-3. Ask: *"Show my counters"* or *"How many visits this week?"*
+**Claude.ai** (Settings → Connectors → Add):
+```
+https://mcp.getaiaiai.ru/yandex-metrika
+```
+Click **Connect** → sign in with Yandex → allow access.
+
+**Claude Code CLI:**
+```bash
+claude mcp add --transport http yandex-metrika https://mcp.getaiaiai.ru/yandex-metrika/
+claude mcp login yandex-metrika
+```
+A browser window opens → sign in with Yandex → done. On headless/SSH: add `--no-browser` to `mcp login` and paste the redirect URL when prompted.
+
+**Claude Desktop / Cursor** — add to `mcpServers`:
+```json
+{
+  "mcpServers": {
+    "yandex-metrika": {
+      "type": "http",
+      "url": "https://mcp.getaiaiai.ru/yandex-metrika/"
+    }
+  }
+}
+```
 
 No app registration, no tokens to manage. **Read-only** — the service never writes to your Metrika account.
 
 <details>
 <summary>Подключение на русском</summary>
 
-1. В Claude откройте **Настройки → Коннекторы → Добавить** и введите:
-   ```
-   https://mcp.getaiaiai.ru/yandex-metrika
-   ```
-2. Нажмите **Подключить** → **войдите через Яндекс** → разрешите доступ.
-3. Спросите: *«покажи мои счётчики»* или *«сколько визитов на сайте за неделю?»*
+**Claude.ai** (Настройки → Коннекторы → Добавить):
+```
+https://mcp.getaiaiai.ru/yandex-metrika
+```
+Нажмите **Подключить** → войдите через Яндекс → разрешите доступ.
+
+**Claude Code CLI:**
+```bash
+claude mcp add --transport http yandex-metrika https://mcp.getaiaiai.ru/yandex-metrika/
+claude mcp login yandex-metrika
+```
+Откроется браузер → войти через Яндекс → готово.
 
 </details>
 
